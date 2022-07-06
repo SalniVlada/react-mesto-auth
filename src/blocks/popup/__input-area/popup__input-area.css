@@ -1,0 +1,17 @@
+.popup__input-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup__input-area:first-child {
+  margin-top: 28px;
+}
+
+@media screen and (max-width:660px) {
+  .popup__input-area {
+    position: relative;
+    overflow: hidden;
+    height: 57px;
+    align-content: center;
+  }
+}

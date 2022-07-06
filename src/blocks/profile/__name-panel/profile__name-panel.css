@@ -1,0 +1,15 @@
+.profile__name-panel {
+  margin-bottom: 10px;
+  max-width: 336px;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+@media screen and (max-width:660px) {
+  .profile__name-panel {
+    margin-bottom: 0px;
+    justify-content: center;
+    width: 282px;
+    display: flex;
+  }
+}

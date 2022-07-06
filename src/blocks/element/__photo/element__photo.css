@@ -1,0 +1,11 @@
+.element__photo {
+  width: 282px;
+  height: 282px;
+  border-radius: 10px 10px 0px 0px;
+  position:relative;
+  vertical-align:bottom;
+  object-fit: cover;
+  cursor: pointer;
+  min-height: 282px;
+  max-width: 282px;
+}

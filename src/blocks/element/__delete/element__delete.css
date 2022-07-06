@@ -1,0 +1,17 @@
+.element__delete {
+  background: url(../../../sprint-4-images/Delete.svg);
+  width: 18px;
+  height: 19px;
+  border-style: none;
+  z-index: 2;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  opacity: 1;
+  transition: 1s;
+  cursor: pointer;
+}
+
+.element__delete:hover {
+  opacity: 0.6;
+}

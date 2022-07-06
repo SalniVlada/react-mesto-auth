@@ -1,0 +1,11 @@
+.login__input {
+  width: 358px;
+  border: none;
+  border-bottom: 2px solid rgb(0,0,0, 0.2);
+  background-color: transparent;
+  margin-bottom: 30px;
+}
+
+.login__input:first-child {
+  margin-bottom: 216px;
+}

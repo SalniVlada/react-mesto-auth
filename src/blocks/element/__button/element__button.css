@@ -1,0 +1,20 @@
+.element__button {
+  background: url(../../../sprint-4-images/Vector-Like.svg) no-repeat;
+  width: 22px;
+  height: 19px;
+  background-position: center;
+  border-style: none;
+  margin-right: 20px;
+  margin-top: 24px;
+  opacity: 1;
+  transition: 1s;
+  cursor: pointer;
+}
+
+.element__button:hover {
+  opacity: 0.6;
+}
+
+.element_active {
+  background: url(../../../sprint-4-images/Union-active.svg);
+}

@@ -1,0 +1,23 @@
+.popup__error_visible {
+  max-width: 362px;
+  height: 12px;
+  width: 100%;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
+  color: #FF0000;
+  margin-top: 5px;
+  margin-bottom: 11px;
+}
+
+@media screen and (max-width:660px) {
+  .popup__error_visible {
+    display: block;
+    margin: 0 auto;
+    max-width: 242px;
+    height: 30px;
+    position: relative;
+  }
+}
