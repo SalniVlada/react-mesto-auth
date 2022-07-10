@@ -1,14 +1,14 @@
 import success from '../sprint-4-images/success.png';
 import error from '../sprint-4-images/error.png';
 
-function InfoTooltip({}) {
+function InfoTooltip({isVisible, isSuccess, onClose}) {
 
   return(
-    <div className="infoTooltip">
+    <div className={`infoTooltip ${isVisible && "infoTooltip_opened"}`}>
       <div className="infoTooltip__container">
-        <button type="button" className="infoTooltip__close" ></button>
-        <img src={success} alt="Успешно" className="infoTooltip__photo" />
-        <h2 className="infoTooltip__title">Вы успешно зарегестрировались!</h2>
+        <button type="button" className="infoTooltip__close" onClick={onClose}></button>
+        <img src={isSuccess ? success : error} className="infoTooltip__icon" />
+        <h2 className="infoTooltip__text">{isSuccess ? "Вы успешно зарегистрировались!" : "Что-то пошло не так! Попробуйте ещё раз."}</h2>
       </div>
     </div>
   )

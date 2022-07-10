@@ -1,13 +1,11 @@
-.login__title {
-  width: 358px;
-  height: 29px;
+.infoTooltip__text {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 900;
   font-size: 24px;
   line-height: 29px;
   text-align: center;
-  color: #FFFFFF;
-  margin-top: 60px;
-  margin-bottom: 50px;
+  color: #000000;
+  margin-bottom: 60px;
+  max-width: 358px;
 }

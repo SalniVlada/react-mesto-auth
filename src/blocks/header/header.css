@@ -6,6 +6,9 @@
   border-bottom-width: 1px;
   border-bottom-color: rgba(84, 84, 84, .7);
   border-bottom-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 @media screen and (max-width:660px) {

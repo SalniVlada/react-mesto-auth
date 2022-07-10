@@ -1,36 +1,66 @@
 import React from 'react';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 import '../index.css';
+
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
-import api from '../utils/Api.js';
-import { CurrentUserContext } from '../contexts/CurrentUserContext.js'; 
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import InfoTooltip from './InfoTooltip';
+
+import { api, auth } from '../utils/Api.js';
+import { CurrentUserContext } from '../contexts/CurrentUserContext.js'; 
+
+import Login from './Login';
 import Register from './Register';
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
-
+  const navigate = useNavigate();
   const [isPopupEditAvatar, setPopupEditAvatar] = React.useState(false);
   const [isPopupEditProfile, setPopupEditProfile] = React.useState(false);
   const [isPopupAddPlace, setPopupAddPlace] = React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState(null);
   const [currentUser, setCurrentUser] = React.useState([]);
   const [cards, setCards] = React.useState([]);
+  
   const [loggedIn, setLoggedIn] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [isToolTipVisible, setToolTipVisible] = React.useState(false);
+  const [isToolTipSuccess, setToolTipSuccess] = React.useState(false);
 
   React.useEffect(() => {
+    tokenCheck();
     api.getUserInfo().then((data) => {
       setCurrentUser(data)
     })
     .catch((err) => 
       console.error(err));
   }, []);
+
+  function tokenCheck() {
+    // если у пользователя есть токен в localStorage, 
+    // эта функция проверит, действующий он или нет
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      // здесь будем проверять токен
+      auth.getUserAuth(jwt)
+        .then((data) => {
+          // установить email из data в шапке
+          setEmail(data.data.email);
+          setLoggedIn(true);
+        })
+        .then(() => navigate('/'))
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
 
   function handleEditAvatarClick() {
     setPopupEditAvatar(true);
@@ -117,34 +147,86 @@ function App() {
       console.log(err));
   }
 
+  function onRegister(password, email) {
+    auth.signUp({password: password, email: email})
+      .then((data) => {
+        setToolTipSuccess(true);
+        setToolTipVisible(true);
+        navigate('/sign-in');
+      })
+      .catch((err) => {
+        setToolTipSuccess(false);
+        setToolTipVisible(true);
+        console.log(err)
+      });
+  }
+
+  function onLogin(password, email) {
+    auth.signIn({password: password, email: email})
+      .then((data) => {
+        localStorage.setItem('jwt', data.token);
+        setEmail(email);
+        setLoggedIn(true);
+        navigate('/');
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function signOut() {
+    localStorage.removeItem('jwt');
+  }
+
+  function closeToolTip() {
+    setToolTipVisible(false);
+  }
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className='root'>
 
         <Routes>
-          <Route path="/sign-up" element={<Register/>} />
-          <Route path="/sign-in" element={<Login/>} />
-          <Route path="/" element={}/>
+          <Route path="/sign-up" element={
+              <>
+                <Header authections={"Войти"} link={"/sign-in"}/>
+                <Register onRegister={onRegister}/>
+              </>
+          } />
+
+          <Route path="/sign-in" element={
+            <>
+              <Header authections={"Регистрация"} link={"/sign-up"}/>
+              <Login onLogin={onLogin}/>
+            </>
+          } />
+
+          <Route path="/" element={<ProtectedRoute loggedIn={loggedIn} />}>
+            <Route path="/" element={
+              <>
+                <Header authections={"Выйти"} link={"/sign-in"} email={email} onClick={signOut}/>
+
+                <Main onEditProfile={handleEditProfileClick} isAddPlacePopupOpen={handleAddPlaceClick} 
+                isEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete}/>
+              </>
+            }
+            />
+          </Route>
         </Routes>
 
-          <Header/>
+        <Footer/>
 
-          <Main onEditProfile={handleEditProfileClick} isAddPlacePopupOpen={handleAddPlaceClick} 
-          isEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete}/>
+        <EditProfilePopup isOpen={isPopupEditProfile} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
 
-          <Footer/>
+        <AddPlacePopup isOpen={isPopupAddPlace} onClose={closeAllPopups} onUpdateCard={handleUpdateCard}/>
 
-          <EditProfilePopup isOpen={isPopupEditProfile} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
+        <EditAvatarPopup isOpen={isPopupEditAvatar} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
 
-          <AddPlacePopup isOpen={isPopupAddPlace} onClose={closeAllPopups} onUpdateCard={handleUpdateCard}/>
+        <PopupWithForm name='delete' title='Вы уверены?'/>
 
-          <EditAvatarPopup isOpen={isPopupEditAvatar} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
-          <PopupWithForm name='delete' title='Вы уверены?'/>
+        <InfoTooltip isVisible={isToolTipVisible} isSuccess={isToolTipSuccess} onClose={closeToolTip} />
 
-          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-
-        </div>
+      </div>
     </CurrentUserContext.Provider>
   );
 }
