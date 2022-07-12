@@ -177,10 +177,6 @@ function App() {
       });
   }
 
-  function signOut() {
-    localStorage.removeItem('jwt');
-  }
-
   function closeToolTip() {
     setToolTipVisible(false);
   }
@@ -188,31 +184,16 @@ function App() {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className='root'>
+        <Header email={email}/>
 
         <Routes>
-          <Route path="/sign-up" element={
-              <>
-                <Header authections={"Войти"} link={"/sign-in"}/>
-                <Register onRegister={onRegister}/>
-              </>
-          } />
+          <Route path="/sign-up" element={<Register onRegister={onRegister}/>} />
 
-          <Route path="/sign-in" element={
-            <>
-              <Header authections={"Регистрация"} link={"/sign-up"}/>
-              <Login onLogin={onLogin}/>
-            </>
-          } />
+          <Route path="/sign-in" element={<Login onLogin={onLogin}/>} />
 
           <Route path="/" element={<ProtectedRoute loggedIn={loggedIn} />}>
-            <Route path="/" element={
-              <>
-                <Header authections={"Выйти"} link={"/sign-in"} email={email} onClick={signOut}/>
-
-                <Main onEditProfile={handleEditProfileClick} isAddPlacePopupOpen={handleAddPlaceClick} 
-                isEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete}/>
-              </>
-            }
+            <Route path="/" element={<Main onEditProfile={handleEditProfileClick} isAddPlacePopupOpen={handleAddPlaceClick} 
+                isEditAvatar={handleEditAvatarClick} onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete}/>}
             />
           </Route>
         </Routes>
