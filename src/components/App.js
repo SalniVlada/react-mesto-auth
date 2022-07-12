@@ -1,4 +1,4 @@
-import React from 'react';
+import {useEffect, useState} from 'react';
 import { Routes, Route, useNavigate } from "react-router-dom";
 
 import '../index.css';
@@ -22,36 +22,34 @@ import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   const navigate = useNavigate();
-  const [isPopupEditAvatar, setPopupEditAvatar] = React.useState(false);
-  const [isPopupEditProfile, setPopupEditProfile] = React.useState(false);
-  const [isPopupAddPlace, setPopupAddPlace] = React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState(null);
-  const [currentUser, setCurrentUser] = React.useState([]);
-  const [cards, setCards] = React.useState([]);
-  
-  const [loggedIn, setLoggedIn] = React.useState(false);
-  const [email, setEmail] = React.useState('');
-  const [isToolTipVisible, setToolTipVisible] = React.useState(false);
-  const [isToolTipSuccess, setToolTipSuccess] = React.useState(false);
+  const [isPopupEditAvatar, setPopupEditAvatar] = useState(false);
+  const [isPopupEditProfile, setPopupEditProfile] = useState(false);
+  const [isPopupAddPlace, setPopupAddPlace] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [currentUser, setCurrentUser] = useState([]);
+  const [cards, setCards] = useState([]);
 
-  React.useEffect(() => {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isToolTipVisible, setToolTipVisible] = useState(false);
+  const [isToolTipSuccess, setToolTipSuccess] = useState(false);
+  const [toolTipText, setToolTipText] = useState('');
+
+  useEffect(() => {
     tokenCheck();
-    api.getUserInfo().then((data) => {
-      setCurrentUser(data)
-    })
-    .catch((err) => 
-      console.error(err));
-  }, []);
+    if (loggedIn) {
+      api.getUserInfo().then((data) => {
+        setCurrentUser(data)
+      })
+      .catch((err) => console.error(err));
+    }
+  }, [loggedIn]);
 
   function tokenCheck() {
-    // если у пользователя есть токен в localStorage, 
-    // эта функция проверит, действующий он или нет
     const jwt = localStorage.getItem('jwt');
     if (jwt) {
-      // здесь будем проверять токен
       auth.getUserAuth(jwt)
         .then((data) => {
-          // установить email из data в шапке
           setEmail(data.data.email);
           setLoggedIn(true);
         })
@@ -109,13 +107,14 @@ function App() {
     .catch((err) => console.error(err));
   }
 
-  React.useEffect(() => {
-    api.getInitialCards().then((data) => {
-      setCards(data)
-    })
-    .catch((err) => 
-      console.error(err));
-  }, []);
+  useEffect(() => {
+    if (loggedIn) {
+      api.getInitialCards().then((data) => {
+        setCards(data)
+      })
+    .catch((err) => console.error(err));
+    }
+  }, [loggedIn]);
 
   const setNewCards = (id, newCard) => {
     setCards((state) => state.map((c) => (c._id === id ? newCard : c)));
@@ -152,11 +151,13 @@ function App() {
       .then((data) => {
         setToolTipSuccess(true);
         setToolTipVisible(true);
+        setToolTipText("Вы успешно зарегистрировались!");
         navigate('/sign-in');
       })
       .catch((err) => {
         setToolTipSuccess(false);
         setToolTipVisible(true);
+        setToolTipText("Что-то пошло не так! Попробуйте ещё раз.");
         console.log(err)
       });
   }
@@ -169,7 +170,11 @@ function App() {
         setLoggedIn(true);
         navigate('/');
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setToolTipVisible(true);
+        setToolTipText("Что-то пошло не так! Попробуйте ещё раз.");
+        console.log(err)
+      });
   }
 
   function signOut() {
@@ -224,7 +229,7 @@ function App() {
 
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
-        <InfoTooltip isVisible={isToolTipVisible} isSuccess={isToolTipSuccess} onClose={closeToolTip} />
+        <InfoTooltip isVisible={isToolTipVisible} isSuccess={isToolTipSuccess} onClose={closeToolTip} text={toolTipText} />
 
       </div>
     </CurrentUserContext.Provider>

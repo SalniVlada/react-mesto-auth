@@ -1,11 +1,11 @@
-import React from 'react';
+import {useContext} from 'react';
 import Card from './Card';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js'; 
 
 
 function Main({onCardClick, onCardLike, onCardDelete, isEditAvatar, onEditProfile, isAddPlacePopupOpen, cards}) {
 
-  const currentUser = React.useContext(CurrentUserContext);
+  const currentUser = useContext(CurrentUserContext);
 
   const renderCard = (card) => {
     return <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike} onCardDelete={onCardDelete} />
